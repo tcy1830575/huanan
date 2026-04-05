@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频著作权权属证明 - B站专属</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "SimSun", sans-serif;
+        }
+        body {
+            background: #f2f2f2;
+            padding: 30px 20px;
+        }
+        .document {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 60px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .title {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #000;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #00a1d6;
+        }
+        .video-box {
+            margin: 40px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border: 1px solid #eee;
+        }
+        .video-box label {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: block;
+        }
+        video {
+            width: 100%;
+            border-radius: 4px;
+            background: #000;
+        }
+        .info {
+            margin: 25px 0;
+            line-height: 2;
+            font-size: 15px;
+        }
+        .info strong {
+            display: inline-block;
+            width: 140px;
+            font-weight: bold;
+        }
+        .md5 {
+            font-family: monospace;
+            word-break: break-all;
+            background: #f5f5f5;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+        }
+        .statement {
+            background: #f8f9fa;
+            padding: 30px;
+            border-left: 4px solid #00a1d6;
+            margin: 40px 0;
+            line-height: 2;
+            font-size: 15px;
+        }
+        .button-group {
+            text-align: center;
+            margin-top: 40px;
+        }
+        button {
+            padding: 12px 30px;
+            margin: 0 10px;
+            background: #00a1d6;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0088b9;
+        }
+        #fileInput {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="document">
+    <div class="title">视频著作权权属证明</div>
+    <div class="subtitle">原创首发于哔哩哔哩 · 版权所有 · 侵权必究</div>
+
+    <!-- 视频播放区 -->
+    <div class="video-box">
+        <label>原始视频原件（可直接播放核验）</label>
+        <video id="videoPlayer" controls></video>
+        <div style="margin-top:10px;font-size:13px;color:#666;">
+            注：本视频为著作权人原始成片，与B站发布稿件完全一致，可直接作为权属依据。
+        </div>
+    </div>
+
+    <!-- 权属信息 -->
+    <div class="info">
+        <div><strong>著作权人：</strong><span id="ownerName">XXX</span></div>
+        <div><strong>B站 UID：</strong><span id="biliUid">12345678</span></div>
+        <div><strong>B站主页：</strong><span id="biliHome">https://space.bilibili.com/xxx</span></div>
+        <div><strong>稿件链接：</strong><span id="biliUrl">https://www.bilibili.com/video/xxx</span></div>
+        <div><strong>首发时间：</strong><span id="publishTime">2026-01-01 00:00:00</span></div>
+        <div><strong>视频唯一标识(MD5)：</strong></div>
+        <div class="md5" id="videoMd5">未生成</div>
+    </div>
+
+    <!-- 权威著作权声明 -->
+    <div class="statement">
+        <strong>本人郑重声明：</strong><br>
+        本视频由本人独立创作，享有完整著作权。
+        本视频<strong>仅在哔哩哔哩平台独家首发</strong>，未授权任何第三方平台发布、搬运、剪辑、转载。
+        本证明所展示视频为原始文件，与B站发布内容完全一致，权属真实有效。
+        本人对该视频拥有完整著作权，无需提供工程文件即可证明权属。
+    </div>
+
+    <div class="button-group">
+        <input type="file" id="fileInput" accept="video/*">
+        <button onclick="document.getElementById('fileInput').click()">上传原始视频</button>
+        <button onclick="saveProof()">保存证明文件</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/spark-md5@3.0.2/spark-md5.min.js"></script>
+<script>
+    let md5 = "";
+    const fileInput = document.getElementById('fileInput');
+    const videoPlayer = document.getElementById('videoPlayer');
+
+    fileInput.onchange = function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // 播放视频
+        videoPlayer.src = URL.createObjectURL(file);
+
+        // 计算唯一MD5
+        const reader = new FileReader();
+        reader.onload = function(res) {
+            const hash = SparkMD5.ArrayBuffer.hash(res.target.result);
+            md5 = hash;
+            document.getElementById('videoMd5').innerText = hash;
+            alert('视频已加载 → 唯一标识生成完成！');
+        };
+        reader.readAsArrayBuffer(file);
+    };
+
+    // 保存成独立HTML证明
+    function saveProof() {
+        const html = document.documentElement.outerHTML;
+        const blob = new Blob([html], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'B站视频著作权证明_' + Date.now() + '.html';
+        a.click();
+    }
+</script>
+
+</body>
+</html>
